@@ -1,11 +1,9 @@
 from typing import Any
-
-from sqlalchemy import Boolean, Column, ForeignKey, Integer, String
+from sqlalchemy import Column, Integer, String
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
-from sqlalchemy.orm import relationship, validates
-
+from sqlalchemy.orm import validates
 from .hashing import Hasher
-from ..database import Base
+from database import Base
 
 
 class User(Base):
@@ -13,7 +11,7 @@ class User(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     email = Column(String, unique=True)
-    user_type = Column(String, default='Student')
+    user_type = Column(String, default='student')
     first_name = Column(String(50), nullable=False)
     last_name = Column(String(50))
     address = Column(String)
@@ -51,4 +49,16 @@ class User(Base):
         return value
 
     def __repr__(self) -> str:
-        return f"<User {self.user_id}>"
+        return f"<User {self.id}>"
+
+    @classmethod
+    def get_user_by_email(cls, db_session: Any, email: str):
+        return db_session.query(cls).filter(cls.email == email).first()
+
+    @classmethod
+    def get_user_by_user_id(cls, db_session: Any, user_id: str):
+        return db_session.query(cls).filter(cls.id == user_id).first()
+
+    @classmethod
+    def get_user_instance(cls, db_session: Any, user_id: str):
+        return db_session.query(cls).filter(cls.id == user_id)
