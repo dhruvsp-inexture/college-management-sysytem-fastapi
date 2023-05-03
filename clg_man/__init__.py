@@ -6,8 +6,10 @@ def create_app():
 
     from clg_man.User.routes import user_router
     from clg_man.courses.routes import course_router
+    from clg_man.Admin.routes import admin_router
     app.include_router(user_router)
     app.include_router(course_router)
+    app.include_router(admin_router)
     from clg_man import error_exception_handler
     # error_exception_handler
     """

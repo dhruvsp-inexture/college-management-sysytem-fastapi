@@ -1,5 +1,6 @@
 from typing import Any
 from sqlalchemy import Column, Integer, String, Date, Float
+from sqlalchemy.orm import relationship
 from database import Base
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 
@@ -13,6 +14,8 @@ class Course(Base):
     start_date = Column(Date)
     end_date = Column(Date)
     price = Column(Float, nullable=False)
+
+    faculties = relationship("FacultyCourseMapping", back_populates="course_mapping")
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         self.name = kwargs.get("name")
