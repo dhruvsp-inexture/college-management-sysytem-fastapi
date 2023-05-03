@@ -45,9 +45,17 @@ class UpdateCourseRequestSchema(CourseRequestSchema):
     price: Optional[float] = None
 
 
+class CourseSchema(BaseModel):
+    name: str
+    description: str
+    start_date: datetime.date
+    end_date: datetime.date
+    price: float
+
+
 class CourseResponseSchema(CourseResponseBaseSchema):
-    data: CourseRequestSchema
+    data: CourseSchema
 
 
 class AllCourseResponseSchema(CourseResponseBaseSchema):
-    data: List[CourseRequestSchema]
+    data: List[CourseSchema]

@@ -1,6 +1,5 @@
 from fastapi import status
 from fastapi.encoders import jsonable_encoder
-
 from clg_man.Student.models import StudentCourseMapping
 from clg_man.courses.models import Course
 from clg_man.language import Response

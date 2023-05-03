@@ -1,10 +1,8 @@
 from fastapi import APIRouter, Depends
 from fastapi_jwt_auth import AuthJWT
 from sqlalchemy.orm import Session
-
 from clg_man.Student import schemas
 from clg_man.Student.services import StudentServices
-
 from database import get_db
 
 student_router = APIRouter(
