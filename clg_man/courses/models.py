@@ -3,6 +3,7 @@ from sqlalchemy import Column, Integer, String, Date, Float
 from sqlalchemy.orm import relationship
 from database import Base
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
+from clg_man.Student.models import StudentCourseMapping
 
 
 class Course(Base):
@@ -16,6 +17,7 @@ class Course(Base):
     price = Column(Float, nullable=False)
 
     faculties = relationship("FacultyCourseMapping", back_populates="course_mapping")
+    students = relationship("StudentCourseMapping", back_populates="course_mapping_student")
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         self.name = kwargs.get("name")
