@@ -21,6 +21,10 @@ if config.config_file_name is not None:
 # for 'autogenerate' support
 # from myapp import mymodel
 # target_metadata = mymodel.Base.metadata
+from clg_man.User import models
+from clg_man.courses import models
+from clg_man.Admin import models
+from clg_man.Student import models
 from database import Base
 
 target_metadata = Base.metadata

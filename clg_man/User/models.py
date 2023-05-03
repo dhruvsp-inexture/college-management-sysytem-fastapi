@@ -1,10 +1,10 @@
 from typing import Any
 from sqlalchemy import Column, Integer, String
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
-from sqlalchemy.orm import validates
+from sqlalchemy.orm import validates, relationship
 from .hashing import Hasher
 from database import Base
-
+from clg_man.Student.models import StudentCourseMapping
 
 class User(Base):
     __tablename__ = "users"
@@ -17,6 +17,9 @@ class User(Base):
     address = Column(String)
     phone_number = Column(String)
     password = Column(String)
+
+    assigned_courses = relationship("FacultyCourseMapping", back_populates="faculty_mapping")
+    enrolled_courses = relationship("StudentCourseMapping", back_populates="student_mapping")
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         self.email = kwargs.get("email")
@@ -43,7 +46,7 @@ class User(Base):
 
     @validates('user_type')
     def validate_user_type(self, key, value):
-        allowed_user_types = ['admin', 'teacher', 'student']
+        allowed_user_types = ['admin', 'faculty', 'student']
         if value not in allowed_user_types:
             raise ValueError(f"Invalid user choice: {value}")
         return value
@@ -53,7 +56,7 @@ class User(Base):
 
     @classmethod
     def get_user_by_email(cls, db_session: Any, email: str):
-        return db_session.query(cls).filter(cls.email == email).first()
+            return db_session.query(cls).filter(cls.email == email).first()
 
     @classmethod
     def get_user_by_user_id(cls, db_session: Any, user_id: str):

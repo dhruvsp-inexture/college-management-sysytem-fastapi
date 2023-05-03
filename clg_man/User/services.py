@@ -77,3 +77,9 @@ class UserServices:
         else:
             return Response(status_code=status.HTTP_400_BAD_REQUEST,
                             message="Incorrect Password!").send_error_response()
+
+    @staticmethod
+    def get_all_users(db_session):
+        all_users = db_session.query(User).all()
+        return Response(status_code=status.HTTP_200_OK,
+                        message="All users fetched successfully", data=all_users).send_success_response()

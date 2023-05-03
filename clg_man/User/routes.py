@@ -37,8 +37,14 @@ def change_password(request: schemas.UserPasswordChangeRequestSchema, db: Sessio
     return UserServices.user_change_password(request, db, authorize)
 
 
+def get_all_users(db: Session = Depends(get_db), authorize: AuthJWT = Depends()):
+    authorize.jwt_required()
+    return UserServices.get_all_users(db)
+
+
 user_router.add_api_route("/login", login_user, methods=['POST'])
 user_router.add_api_route("/register", create_user, methods=["POST"])
-user_router.add_api_route("/user", get_user, methods=["GET"], response_model=schemas.UserProfileSchema)
+user_router.add_api_route("/profile", get_user, methods=["GET"], response_model=schemas.UserProfileSchema)
 user_router.add_api_route("/user", update_user, methods=["PATCH"])
 user_router.add_api_route("/change-password", change_password, methods=["PUT"])
+user_router.add_api_route("/users", get_all_users, methods=["GET"])
