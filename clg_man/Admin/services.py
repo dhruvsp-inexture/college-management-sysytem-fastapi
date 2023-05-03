@@ -24,8 +24,10 @@ class AdminServices:
             db_session.add(assign_course_data)
             db_session.commit()
             return Response(status_code=status.HTTP_201_CREATED,
-                            message="Assigned course successfully",
-                            data=jsonable_encoder(request.dict())).send_success_response()
+                            message="Course Assigned successfully",
+                            data={"course": jsonable_encoder(assign_course_data.course_mapping),
+                                  "faculty": jsonable_encoder(
+                                      assign_course_data.faculty_mapping)}).send_success_response()
         return (
             Response(status_code=status.HTTP_400_BAD_REQUEST,
                      message=f"Faculty not found with id {faculty_id}"
@@ -44,3 +46,27 @@ class AdminServices:
                             message=f"all {usertype} fetched successfully",
                             data=jsonable_encoder(users_data)).send_success_response()
         return Response(status_code=status.HTTP_400_BAD_REQUEST, message="No such users found").send_error_response()
+
+    @staticmethod
+    def unassign_course(request, db_session):
+        course_id = request.dict().get('course_id')
+        faculty_id = request.dict().get('faculty_id')
+        assigned_course_data = db_session.query(FacultyCourseMapping).filter_by(faculty_id=faculty_id,
+                                                                                course_id=course_id).first()
+        if assigned_course_data:
+            db_session.delete(assigned_course_data)
+            db_session.commit()
+            return Response(status_code=status.HTTP_200_OK,
+                            message="Course Unassigned Successfully"
+                            ).send_success_response()
+        return Response(status_code=status.HTTP_400_BAD_REQUEST,
+                        message="No faculty found assigned with this course").send_error_response()
+
+    @staticmethod
+    def show_all_assigned_courses(db_session):
+        assigned_course_data = db_session.query(FacultyCourseMapping).all()
+        return Response(status_code=status.HTTP_200_OK,
+                        message="Assigned Courses fetched successfully",
+                        data=[{"course_data": jsonable_encoder(data.course_mapping),
+                               "faculty_data": jsonable_encoder(data.faculty_mapping)} for data in
+                              assigned_course_data]).send_success_response()
