@@ -1,6 +1,10 @@
+import datetime
+import uuid
+
+from clg_man.User import utils
 from clg_man.User.hashing import Hasher
 from clg_man.User.jwt_authentication import Token
-from clg_man.User.models import User
+from clg_man.User.models import User, ResetCode
 from fastapi_jwt_auth import AuthJWT
 from fastapi import status
 from clg_man.language import Response
@@ -83,3 +87,53 @@ class UserServices:
         all_users = db_session.query(User).all()
         return Response(status_code=status.HTTP_200_OK,
                         message="All users fetched successfully", data=all_users).send_success_response()
+
+    @staticmethod
+    def forgot_password(request, db):
+        user = User.get_user_by_email(db, request.email)
+        existing_user = db.query(ResetCode).filter(ResetCode.email == request.email).first()
+        if not user:
+            return Response(status_code=status.HTTP_400_BAD_REQUEST,
+                            message="User not found").send_error_response()
+
+        reset_code = str(uuid.uuid1())
+
+        if existing_user:
+            existing_user.reset_code = reset_code
+            existing_user.generated_at = datetime.datetime.now()
+            db.commit()
+
+        else:
+            new_code = ResetCode(email=request.email, reset_code=reset_code, generated_at=datetime.datetime.now())
+            db.add(new_code)
+            db.commit()
+            db.refresh(new_code)
+
+        subject, recipient, message = utils.forgot_password_format(request.email, reset_code)
+
+        """Sending Email to User"""
+        utils.send_email(subject, recipient, message)
+        return Response(status_code=status.HTTP_200_OK,
+                        message="We have send an Email, to reset your Password.").send_success_response()
+
+    @staticmethod
+    def reset_password(request, db):
+
+        reset_token = request.dict().get('reset_token')
+        user = db.query(ResetCode).filter(ResetCode.reset_code == reset_token).first()
+        if not user:
+            return Response(status_code=status.HTTP_400_BAD_REQUEST,
+                            message="Incorrect Token").send_error_response()
+
+        email = getattr(user, 'email')
+
+        check_user = User.get_user_by_email(db, email)
+        check_user.password = Hasher.hash_password(request.password)
+
+        delete_token = db.query(ResetCode).filter(ResetCode.email == email).first()
+        db.delete(delete_token)
+
+        db.commit()
+
+        return Response(status_code=status.HTTP_200_OK,
+                        message="Your Password has been Successfully Reset.").send_success_response()

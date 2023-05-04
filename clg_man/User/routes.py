@@ -42,9 +42,19 @@ def get_all_users(db: Session = Depends(get_db), authorize: AuthJWT = Depends())
     return UserServices.get_all_users(db)
 
 
+def forgot_password(request: schemas.ForgotPassword, db: Session = Depends(get_db)):
+    return UserServices.forgot_password(request, db)
+
+
+def reset_password(request: schemas.ResetPassword, db: Session = Depends(get_db)):
+    return UserServices.reset_password(request, db)
+
+
 user_router.add_api_route("/login", login_user, methods=['POST'])
 user_router.add_api_route("/register", create_user, methods=["POST"])
 user_router.add_api_route("/profile", get_user, methods=["GET"], response_model=schemas.UserProfileSchema)
 user_router.add_api_route("/user", update_user, methods=["PATCH"])
 user_router.add_api_route("/change-password", change_password, methods=["PUT"])
 user_router.add_api_route("/users", get_all_users, methods=["GET"])
+user_router.add_api_route("/forgot-password", forgot_password, methods=['POST'])
+user_router.add_api_route("/reset-password", reset_password, methods=['PUT'])

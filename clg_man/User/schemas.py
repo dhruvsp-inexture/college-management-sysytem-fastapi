@@ -69,3 +69,11 @@ class UserPasswordChangeRequestSchema(BaseModel):
     class Config:
         orm_mode = True
 
+
+class ForgotPassword(BaseModel):
+    email: str
+
+
+class ResetPassword(BaseModel):
+    reset_token: str
+    password: str

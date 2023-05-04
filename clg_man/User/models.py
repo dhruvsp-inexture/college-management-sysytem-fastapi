@@ -1,10 +1,11 @@
 from typing import Any
-from sqlalchemy import Column, Integer, String
+from sqlalchemy import Column, Integer, String, DateTime, Boolean
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 from sqlalchemy.orm import validates, relationship
 from .hashing import Hasher
 from database import Base
 from clg_man.Student.models import StudentCourseMapping
+
 
 class User(Base):
     __tablename__ = "users"
@@ -56,7 +57,7 @@ class User(Base):
 
     @classmethod
     def get_user_by_email(cls, db_session: Any, email: str):
-            return db_session.query(cls).filter(cls.email == email).first()
+        return db_session.query(cls).filter(cls.email == email).first()
 
     @classmethod
     def get_user_by_user_id(cls, db_session: Any, user_id: str):
@@ -65,3 +66,15 @@ class User(Base):
     @classmethod
     def get_user_instance(cls, db_session: Any, user_id: str):
         return db_session.query(cls).filter(cls.id == user_id)
+
+
+class ResetCode(Base):
+    __tablename__ = "reset_codes"
+    id = Column(Integer, primary_key=True, index=True)
+    email = Column(String(255), nullable=False, unique=True)
+    reset_code = Column(String(50), nullable=False)
+    expired = Column(Boolean, default=False)
+    generated_at = Column(DateTime)
+
+    def __repr__(self) -> str:
+        return f"{self.reset_code}"
