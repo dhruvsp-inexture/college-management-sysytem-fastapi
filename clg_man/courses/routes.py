@@ -2,6 +2,7 @@ from fastapi import Depends, APIRouter
 from sqlalchemy.orm import Session
 from fastapi_jwt_auth import AuthJWT
 from clg_man.courses.services import CourseServices
+from clg_man.permissions import permission
 from database import get_db
 from clg_man.courses import schemas
 
@@ -10,9 +11,9 @@ course_router = APIRouter(
 )
 
 
+@permission(permissions_to=['admin'])
 def create_course(request: schemas.CourseRequestSchema, db: Session = Depends(get_db),
                   authorize: AuthJWT = Depends()):
-    authorize.jwt_required()
     return CourseServices.create(request, db)
 
 
@@ -26,14 +27,14 @@ def get_course(id: int, db: Session = Depends(get_db), authorize: AuthJWT = Depe
     return CourseServices.get_course(id, db)
 
 
+@permission(permissions_to=['admin'])
 def update_course(id: int, request: schemas.UpdateCourseRequestSchema, db: Session = Depends(get_db),
                   authorize: AuthJWT = Depends()):
-    authorize.jwt_required()
     return CourseServices.update_course(id, request, db)
 
 
+@permission(permissions_to=['admin'])
 def delete_course(id: int, db: Session = Depends(get_db), authorize: AuthJWT = Depends()):
-    authorize.jwt_required()
     return CourseServices.delete_course(id, db)
 
 

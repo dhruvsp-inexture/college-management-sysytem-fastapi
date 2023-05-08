@@ -3,6 +3,7 @@ from sqlalchemy.orm import Session
 from fastapi_jwt_auth import AuthJWT
 from clg_man.User import schemas
 from clg_man.User.services import UserServices
+from clg_man.permissions import permission
 from database import get_db
 
 user_router = APIRouter(
@@ -10,9 +11,9 @@ user_router = APIRouter(
 )
 
 
+@permission(permissions_to=['admin'])
 def create_user(request: schemas.UserRegistrationRequestSchema, db: Session = Depends(get_db),
                 authorize: AuthJWT = Depends()):
-    authorize.jwt_required()
     return UserServices.create(request, db)
 
 
@@ -37,8 +38,8 @@ def change_password(request: schemas.UserPasswordChangeRequestSchema, db: Sessio
     return UserServices.user_change_password(request, db, authorize)
 
 
+@permission(permissions_to=['admin'])
 def get_all_users(db: Session = Depends(get_db), authorize: AuthJWT = Depends()):
-    authorize.jwt_required()
     return UserServices.get_all_users(db)
 
 

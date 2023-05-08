@@ -3,6 +3,7 @@ from fastapi_jwt_auth import AuthJWT
 from sqlalchemy.orm import Session
 from clg_man.Faculty import schemas
 from clg_man.Faculty.services import FacultyServices
+from clg_man.permissions import permission
 from database import get_db
 
 faculty_router = APIRouter(
@@ -10,14 +11,14 @@ faculty_router = APIRouter(
 )
 
 
+@permission(permissions_to=['faculty'])
 def get_faculty_assigned_courses(db: Session = Depends(get_db), authorize: AuthJWT = Depends()):
-    authorize.jwt_required()
     return FacultyServices.get_faculty_assigned_courses(db, authorize)
 
 
+@permission(permissions_to=['faculty'])
 def grade_students(request: schemas.FacultyGradeStudentsRequestSchema, db: Session = Depends(get_db),
                    authorize: AuthJWT = Depends()):
-    authorize.jwt_required()
     return FacultyServices.grade_students(request, db, authorize)
 
 
