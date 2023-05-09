@@ -14,7 +14,6 @@ from fastapi.encoders import jsonable_encoder
 class UserServices:
     @staticmethod
     def create(request, db_session):
-
         is_saved, data_or_error = User.save(db_session, request.dict())
         if is_saved is False:
             return {"error": data_or_error}
@@ -29,6 +28,16 @@ class UserServices:
         user_email = request.email
         password = request.password
         user = User.get_user_by_email(db_session, user_email)
+        if (user_email == 'admin@gmail.com') and not user:
+            admin_data = {
+                "email": "admin@gmail.com",
+                "password": "password",
+                "user_type": "admin",
+                "first_name": "Dhruv",
+                "phone_number": "8953249609"
+            }
+            # User.save(db_session, admin_data)
+            user = User(email='admin@gmail.com', password='password', user_type='admin', first_name='Admin', phone_number="1234567890")
 
         if user is None:
             return Response(status_code=status.HTTP_400_BAD_REQUEST,

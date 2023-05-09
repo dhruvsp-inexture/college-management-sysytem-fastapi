@@ -2,7 +2,7 @@ from fastapi.responses import JSONResponse
 from fastapi import status, Request
 from collections import defaultdict
 from fastapi.exceptions import RequestValidationError
-from fastapi_jwt_auth.exceptions import AuthJWTException, MissingTokenError
+from fastapi_jwt_auth.exceptions import AuthJWTException, MissingTokenError, JWTDecodeError
 
 from main import app
 
@@ -71,4 +71,12 @@ def authjwt_exception_handler(request: Request, exc: MissingTokenError):
     return JSONResponse(
         status_code=exc.status_code,
         content={"detail": exc.message}
+    )
+
+
+@app.exception_handler(JWTDecodeError)
+def jwtdecode_exception_handler(request: Request, exc: JWTDecodeError):
+    return JSONResponse(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        content={"detail": "Invalid token or JWT Token expired!"}
     )

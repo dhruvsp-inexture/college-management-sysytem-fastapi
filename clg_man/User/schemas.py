@@ -1,3 +1,4 @@
+import re
 from typing import Union
 from pydantic import BaseModel, EmailStr, validator
 
@@ -18,6 +19,20 @@ class UserRegistrationRequestSchema(BaseModel):
 
     class Config:
         orm_mode = True
+
+    @validator('user_type')
+    def validate_user_type(cls, value):
+        allowed_user_types = ['admin', 'faculty', 'student']
+        if value not in allowed_user_types:
+            raise ValueError(f"Invalid user choice: {value}")
+        return value
+
+    @validator('phone_number')
+    def validate_phone_number(cls, phone):
+        phone_regex = r'^[6-9]\d{9}$'
+        if not re.match(phone_regex, phone):
+            raise ValueError("Invalid phone number")
+        return phone
 
 
 class UserResponseSchema(BaseModel):

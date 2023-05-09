@@ -1,5 +1,5 @@
 from typing import Any
-from sqlalchemy import Column, Integer, String, DateTime, Boolean
+from sqlalchemy import Column, Integer, String, DateTime, Boolean, event
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 from sqlalchemy.orm import validates, relationship
 from .hashing import Hasher
@@ -44,13 +44,6 @@ class User(Base):
             return False, error[0] + error[1]
         except SQLAlchemyError as e:
             return False, e.__str__()
-
-    @validates('user_type')
-    def validate_user_type(self, key, value):
-        allowed_user_types = ['admin', 'faculty', 'student']
-        if value not in allowed_user_types:
-            raise ValueError(f"Invalid user choice: {value}")
-        return value
 
     def __repr__(self) -> str:
         return f"<User {self.id}>"
