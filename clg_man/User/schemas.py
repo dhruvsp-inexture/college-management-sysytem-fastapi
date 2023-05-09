@@ -34,6 +34,14 @@ class UserRegistrationRequestSchema(BaseModel):
             raise ValueError("Invalid phone number")
         return phone
 
+    @validator('password')
+    def validate_password(cls, password):
+        password_regex = r'^(?=.*[a-z])(?=.*[!@#$%^&*()_+=-])(?=.*[0-9]).{8,20}$'
+        if not re.match(password_regex, password):
+            raise ValueError(
+                "Password comprises of 8 letter which includes atleast one char, one number and one special character")
+        return password
+
 
 class UserResponseSchema(BaseModel):
     email: EmailStr
