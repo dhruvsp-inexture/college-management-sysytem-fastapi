@@ -36,8 +36,8 @@ class UserServices:
                 "first_name": "Dhruv",
                 "phone_number": "8953249609"
             }
-            # User.save(db_session, admin_data)
-            user = User(email='admin@gmail.com', password='password', user_type='admin', first_name='Admin', phone_number="1234567890")
+            user = User.save(db_session, admin_data)[1]
+            # user = User(email='admin@gmail.com', password='password', user_type='admin', first_name='Admin', phone_number="1234567890")
 
         if user is None:
             return Response(status_code=status.HTTP_400_BAD_REQUEST,
