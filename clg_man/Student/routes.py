@@ -18,7 +18,12 @@ def enroll_course(request: schemas.EnrollCourseRequestSchema, db: Session = Depe
 
 
 @permission(permissions_to=['student'])
-def drop_course(request: schemas.EnrollCourseRequestSchema, db: Session = Depends(get_db),
+def payment(request: schemas.PaymentRequestSchema, db: Session = Depends(get_db), authorize: AuthJWT = Depends()):
+    return StudentServices.payment(request)
+
+
+@permission(permissions_to=['student'])
+def drop_course(request: schemas.DropCourseRequestSchema, db: Session = Depends(get_db),
                 authorize: AuthJWT = Depends()):
     return StudentServices.drop_course(request, db, authorize)
 
@@ -29,5 +34,6 @@ def get_all_enrolled_courses(db: Session = Depends(get_db), authorize: AuthJWT =
 
 
 student_router.add_api_route("/enroll-course", enroll_course, methods=['POST'])
-student_router.add_api_route("/drop-course", drop_course, methods=['POST'])
+student_router.add_api_route("/course-payment", payment, methods=['POST'])
+student_router.add_api_route("/drop-course", drop_course, methods=['DELETE'])
 student_router.add_api_route("/enroll-course", get_all_enrolled_courses, methods=['GET'])
