@@ -127,3 +127,43 @@ def add_initial_course(client, db, admin_token_header):
     }
     response = client.post('/course', data=json.dumps(course_data), headers=admin_token_header)
     return response.json()
+
+
+@pytest.fixture(scope='function')
+def faculty_token_header(client, db, admin_token_header):
+    faculty_registration_data = {
+        "email": "faculty@gmail.com",
+        "first_name": "Faculty",
+        "user_type": "faculty",
+        "phone_number": "9999988888",
+        "password": "user@123"
+    }
+    response = client.post('/register', data=json.dumps(faculty_registration_data), headers=admin_token_header)
+
+    faculty_login_data = {
+        "email": "faculty@gmail.com",
+        "password": "user@123"
+    }
+
+    response = client.post('/login', data=json.dumps(faculty_login_data))
+    access_token = response.json()['data']["access_token"]
+    return {'Authorization': f'Bearer {access_token}'}
+
+@pytest.fixture(scope='function')
+def student_token_header(client, db, admin_token_header):
+    student_registration_data = {
+        "email": "student@gmail.com",
+        "first_name": "Student",
+        "phone_number": "8888899999",
+        "password": "user@123"
+    }
+    client.post('/register', data=json.dumps(student_registration_data), headers=admin_token_header)
+
+    student_login_data = {
+        "email": "student@gmail.com",
+        "password": "user@123"
+    }
+
+    response = client.post('/login', data=json.dumps(student_login_data))
+    access_token = response.json()['data']["access_token"]
+    return {'Authorization': f'Bearer {access_token}'}

@@ -18,7 +18,7 @@ def assign_course(request: schemas.AssignCourseRequestSchema, db: Session = Depe
 
 
 @permission(permissions_to=['admin'])
-def get_all_students(usertype: str, db: Session = Depends(get_db), authorize: AuthJWT = Depends()):
+def get_users_from_type(usertype: str, db: Session = Depends(get_db), authorize: AuthJWT = Depends()):
     return AdminServices.get_users_from_type(usertype, db)
 
 
@@ -34,6 +34,6 @@ def get_all_assigned_courses(db: Session = Depends(get_db), authorize: AuthJWT =
 
 
 admin_router.add_api_route("/assign-course", assign_course, methods=['POST'])
-admin_router.add_api_route("/users/{usertype}", get_all_students, methods=['GET'])
-admin_router.add_api_route("/unassign-course", unassign_course, methods=['DELETE'])
+admin_router.add_api_route("/users/{usertype}", get_users_from_type, methods=['GET'])
+admin_router.add_api_route("/unassign-course", unassign_course, methods=['POST'])
 admin_router.add_api_route("/assign-course", get_all_assigned_courses, methods=['GET'])
