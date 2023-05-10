@@ -25,9 +25,15 @@ class CourseServices:
     @staticmethod
     def get_course(course_id, db_session):
         course = Course.get_course_by_id(db_session, course_id)
-        return Response(status_code=status.HTTP_200_OK,
-                        message=f"{course.name} successfully fetched",
-                        data=jsonable_encoder(course)).send_success_response()
+        if course:
+            return Response(status_code=status.HTTP_200_OK,
+                            message=f"{course.name} successfully fetched",
+                            data=jsonable_encoder(course)).send_success_response()
+        else:
+            return Response(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                message=f"Course not found with id {course_id}",
+            ).send_error_response()
 
     @staticmethod
     def update_course(course_id, request, db_session):
@@ -61,8 +67,8 @@ class CourseServices:
         if course:
             db_session.delete(course)
             db_session.commit()
-            return Response(status_code=status.HTTP_400_BAD_REQUEST,
+            return Response(status_code=status.HTTP_200_OK,
                             message=f"{course.name} deleted successfully").send_success_response()
         else:
             return Response(status_code=status.HTTP_400_BAD_REQUEST,
-                            message=f"No course found with id {course_id}").send_success_response()
+                            message=f"No course found with id {course_id}").send_error_response()

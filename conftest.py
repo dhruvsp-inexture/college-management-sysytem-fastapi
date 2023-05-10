@@ -68,7 +68,6 @@ load_dotenv()
 engine: Engine = create_engine(os.getenv('TEST_DATABASE_SQL_URI'))
 TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
-
 Base.metadata.create_all(bind=engine)
 
 
@@ -115,3 +114,16 @@ def admin_token_header(client, db):
     response = client.post("/login", data=json.dumps(data))
     access_token = response.json()['data']["access_token"]
     return {'Authorization': f'Bearer {access_token}'}
+
+
+@pytest.fixture(scope='function')
+def add_initial_course(client, db, admin_token_header):
+    course_data = {
+        "name": "Initial course",
+        "description": "some description",
+        "start_date": "2023-06-04",
+        "end_date": "2023-06-05",
+        "price": 100
+    }
+    response = client.post('/course', data=json.dumps(course_data), headers=admin_token_header)
+    return response.json()

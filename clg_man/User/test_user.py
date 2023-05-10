@@ -1,9 +1,6 @@
 import json
 from starlette import status
 
-from clg_man.User.models import User
-
-
 class TestUser:
 
     def test_login_success_200(self, client):
