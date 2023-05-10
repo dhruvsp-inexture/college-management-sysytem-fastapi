@@ -39,7 +39,7 @@ class StudentServices:
                             ).send_error_response()
         db.delete(enrolled_course_data)
         db.commit()
-        return Response(status_code=status.HTTP_200_CREATED,
+        return Response(status_code=status.HTTP_200_OK,
                         message="Course dropped successfully"
                         ).send_success_response()
 
