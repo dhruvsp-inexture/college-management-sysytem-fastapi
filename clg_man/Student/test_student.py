@@ -1,5 +1,5 @@
 import json
-
+from unittest.mock import patch
 
 class TestStudent:
     def get_payment_token_response(self, client, student_token_header):
@@ -15,20 +15,45 @@ class TestStudent:
             headers=student_token_header,
         )
 
-    def test_get_payment_token_success(self, client, student_token_header):
-        response = self.get_payment_token_response(client, student_token_header)
+    # def test_get_payment_token_success(self, client, student_token_header):
+    #     response = self.get_payment_token_response(client, student_token_header)
+    #
+    #     assert response.status_code == 200
+    #     assert response.json()['message'] == 'Use this token for course payment'
+    #     assert response.json()['data']['token']
 
+    # def test_enroll_course_success_201(self, client, student_token_header, add_initial_course):
+    #     payment_token = self.get_payment_token_response(client, student_token_header).json()['data']['token']
+    #     enroll_course_data = {
+    #         "course_id": 1,
+    #         'payment_token': payment_token
+    #     }
+    #     response = client.post('/enroll-course', data=json.dumps(enroll_course_data), headers=student_token_header)
+    #     response = response.json()
+    #     assert response['status_code'] == 201
+    #     assert response['message'] == 'Course enrolled successfully'
+    #     assert response['data']['name'] == 'Initial course'
+    #     assert response['data']['description'] == 'some description'
+    #     assert response['data']['course_id'] == enroll_course_data['course_id']
+
+    def test_get_payment_token_success(self, client, student_token_header):
+        with patch('stripe.Token.create') as mock_create_token:
+            mock_create_token.return_value = {'id': 'mock_token'}
+            response = self.get_payment_token_response(client, student_token_header)
         assert response.status_code == 200
         assert response.json()['message'] == 'Use this token for course payment'
-        assert response.json()['data']['token']
+        assert response.json()['data']['token'] == 'mock_token'
 
     def test_enroll_course_success_201(self, client, student_token_header, add_initial_course):
-        payment_token = self.get_payment_token_response(client, student_token_header).json()['data']['token']
         enroll_course_data = {
             "course_id": 1,
-            'payment_token': payment_token
+            'payment_token': 'mock_token'
         }
-        response = client.post('/enroll-course', data=json.dumps(enroll_course_data), headers=student_token_header)
+
+        with patch('stripe.PaymentIntent.create') as mock_create_payment:
+            mock_create_payment.return_value = {'status': 'succeeded'}
+            response = client.post('/enroll-course', data=json.dumps(enroll_course_data), headers=student_token_header)
+
         response = response.json()
         assert response['status_code'] == 201
         assert response['message'] == 'Course enrolled successfully'

@@ -45,7 +45,6 @@ class StudentServices:
                         }
                     }
                 )
-                payment.confirm()
             except stripe.error.InvalidRequestError as e:
                 return Response(status_code=status.HTTP_400_BAD_REQUEST,
                                 message=str(e)).send_error_response()

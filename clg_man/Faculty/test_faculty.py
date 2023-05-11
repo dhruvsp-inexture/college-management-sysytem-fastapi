@@ -30,8 +30,8 @@ class TestFaculty:
         course_data = {
             "name": "Computer Science",
             "description": "some description",
-            "start_date": "2023-05-10",
-            "end_date": "2023-05-10",
+            "start_date": "2023-05-11",
+            "end_date": "2023-05-11",
             "price": 0
         }
         response1 = client.post('/course', data=json.dumps(course_data), headers=admin_token_header)
