@@ -37,7 +37,7 @@ class FacultyServices:
             StudentCourseMapping.student_id == student_id).first()
         if not student_data:
             return Response(status_code=status.HTTP_400_BAD_REQUEST,
-                            message="Student with this enrolled course"
+                            message="Student with this enrolled course not found"
                             ).send_error_response()
         course_end_date = student_data.course_mapping_student.end_date
         if course_end_date > date.today():

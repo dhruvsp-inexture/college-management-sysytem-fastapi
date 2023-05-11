@@ -2,9 +2,31 @@ import json
 
 
 class TestStudent:
+    def get_payment_token_response(self, client, student_token_header):
+        course_payment_data = {
+            "number": "4242 4242 4242 4242",
+            "exp_month": 12,
+            "exp_year": 2035,
+            "cvc": "123"
+        }
+        return client.post(
+            "/course-payment",
+            data=json.dumps(course_payment_data),
+            headers=student_token_header,
+        )
+
+    def test_get_payment_token_success(self, client, student_token_header):
+        response = self.get_payment_token_response(client, student_token_header)
+
+        assert response.status_code == 200
+        assert response.json()['message'] == 'Use this token for course payment'
+        assert response.json()['data']['token']
+
     def test_enroll_course_success_201(self, client, student_token_header, add_initial_course):
+        payment_token = self.get_payment_token_response(client, student_token_header).json()['data']['token']
         enroll_course_data = {
-            "course_id": 1
+            "course_id": 1,
+            'payment_token': payment_token
         }
         response = client.post('/enroll-course', data=json.dumps(enroll_course_data), headers=student_token_header)
         response = response.json()

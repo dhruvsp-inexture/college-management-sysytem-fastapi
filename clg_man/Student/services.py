@@ -72,7 +72,10 @@ class StudentServices:
             return Response(status_code=status.HTTP_400_BAD_REQUEST,
                             message=str(e)).send_error_response()
 
-        return card_token
+        return Response(status_code=status.HTTP_200_OK,
+                        message="Use this token for course payment",
+                        data={"token": card_token}
+                        ).send_success_response()
 
     @staticmethod
     def drop_course(request, db, authorize):

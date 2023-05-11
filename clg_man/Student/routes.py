@@ -35,5 +35,5 @@ def get_all_enrolled_courses(db: Session = Depends(get_db), authorize: AuthJWT =
 
 student_router.add_api_route("/enroll-course", enroll_course, methods=['POST'])
 student_router.add_api_route("/course-payment", payment, methods=['POST'])
-student_router.add_api_route("/drop-course", drop_course, methods=['DELETE'])
+student_router.add_api_route("/drop-course", drop_course, methods=['POST'])
 student_router.add_api_route("/enroll-course", get_all_enrolled_courses, methods=['GET'])
